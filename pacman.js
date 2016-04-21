@@ -9,7 +9,7 @@ var EMP = 3;
 
 var gameBoardGrid = [
                       [BRK,BRK,BRK,BRK,BRK,BRK,BRK,BRK,BRK,BRK,BRK,BRK,BRK],
-                      [BRK,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,BRK],
+                      [BRK,PAC,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,BRK],
                       [BRK,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,BRK],
                       [BRK,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,BRK],
                       [BRK,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,COI,BRK],
