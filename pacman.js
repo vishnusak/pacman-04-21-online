@@ -1,5 +1,6 @@
 $(document).ready(function(){
-  drawGameBoard()
+  drawGameBoard();
+  addKeyPressListener();
 })
 
 var BRK = 0;
@@ -66,4 +67,50 @@ function fetchRowCells(row){
     }))
   }
   return htmlElementsInsideRow;
+}
+
+var pacman = {
+  x: 1,
+  y: 1
+}
+
+// ADD LISTENER ON KEY BEING PRESSED
+function addKeyPressListener(){
+  $(document).keydown(function(event){
+    // CHANGE CURRENT LOCATION TO EMPTY
+
+    gameBoardGrid[pacman.y][pacman.x] = EMP
+
+    // FIND OUT WHICH KEY WAS PRESSED
+    // UPDATE PACMAN LOCATION
+    switch(event.which){
+      case 37:
+        // LEFT
+        pacman.x -= 1;
+        break;
+      case 38:
+        // TOP
+        pacman.y -=1;
+        break;
+      case 39:
+        // RIGHT
+        pacman.x +=1;
+        break;
+      case 40:
+        // DOWN
+        pacman.y +=1;
+        break;
+      default:
+        console.log('Arrow key not pressed!')
+    }
+    // If we're here, pacman location has been updated
+
+    // INSERT NEW PACMAN LOCATION INTO GRID
+    gameBoardGrid[pacman.y][pacman.x] = PAC;
+
+    // Redraw game board
+    drawGameBoard();
+
+
+  })
 }
