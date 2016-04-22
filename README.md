@@ -5,5 +5,5 @@
 3. Scoreboard!
 4. Reorient PacMan according to direction of movement
 
-**HACKER FEATURE:**
+###HACKER FEATURE:
 5. Add ghosts that move independently w/ collision detection
