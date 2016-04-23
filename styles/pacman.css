@@ -1,0 +1,85 @@
+body{
+  background-color: black;
+  /*border: 1px solid white;*/
+}
+
+.score{
+  display: inline-block;
+  width: 20%;
+  margin: auto 2% auto 5%;
+  vertical-align: middle;
+  /*border: 1px solid yellow;*/
+}
+
+  .score ul{
+    list-style-type: none;
+    margin: auto;
+    padding: 0;
+    color: white;
+    text-align: center;
+  }
+
+    .score ul li{
+      margin: 10px;
+      font-size: 250%;
+    }
+
+    .score ul li:first-of-type{
+      background-color: white;
+      color: black;    
+      width: 50%;
+      margin: auto;  
+    }
+
+.game-board{
+  display: inline-block;
+  width: 69.5%;
+  vertical-align: middle;
+  /*margin: auto;*/
+  /*border: 1px solid yellow;*/
+}
+
+.row{
+  height: 25px;
+  margin: auto;
+}
+
+.row div{
+  height: 25px;
+  width: 25px;
+  display: inline-block;
+}
+
+.brick{
+  background-image: url('../img/brick2.gif');
+  background-size: cover;
+}
+
+.coin{
+  background-image: url('../img/coin-shine.gif');
+  background-size: cover;
+}
+
+/* Pacman GIF rotated using http://gifgifs.com/rotate/ */
+.pacman-l{
+  background-image: url('../img/pacman-left.gif');
+  background-size: cover;
+}
+
+.pacman-u{
+  background-image: url('../img/pacman-up.gif');
+  background-size: cover;
+}
+
+.pacman-r{
+  background-image: url('../img/pacman-right.gif');
+  background-size: cover;
+}
+
+.pacman-d{
+  background-image: url('../img/pacman-down.gif');
+  background-size: cover;
+}
+
+.empty{
+}

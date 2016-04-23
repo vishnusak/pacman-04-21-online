@@ -1,9 +1,9 @@
 ##FEATURE WISH LIST
 
-1. Collision detection (PacMan shouldn't walk through walls!)
-2. More complex maze!
-3. Scoreboard!
-4. Reorient PacMan according to direction of movement
+1. Collision detection (PacMan shouldn't walk through walls!) - DONE
+2. More complex maze!                                         - DONE (24 x 33 grid)
+3. Scoreboard!                                                - DONE
+4. Reorient PacMan according to direction of movement         - DONE
 
 ###HACKER FEATURE:
 5. Add ghosts that move independently w/ collision detection
