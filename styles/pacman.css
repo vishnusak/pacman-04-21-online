@@ -81,5 +81,15 @@ body{
   background-size: cover;
 }
 
+.dead{
+  background-image: url('../img/explode3.gif');
+  background-size: cover;  
+}
+
+.ghost{
+  background-image: url('../img/inky_ghost2.gif');
+  background-size: cover;
+}
+
 .empty{
 }
