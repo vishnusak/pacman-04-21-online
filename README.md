@@ -1,3 +1,6 @@
+##Updates - 26-April:
+- Added heat-seeking to the ghost. I think the ghost's "Pacman Seeking" ability is pretty good. Not the best by a long way, but definitely servicable.
+
 ##Updates - 24-April:
 - Slightly modified the grid
 - Introduced ghost

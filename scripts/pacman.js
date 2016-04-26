@@ -71,6 +71,9 @@ var prevPac = {
   y: 0
 }
 
+// will hold the total number of coins. start with 1 to account for the coin under the ghost!
+var coins = 1;
+
 // direction of pacman to orient the image
 var dir   = 0;
 
@@ -94,21 +97,26 @@ var score = 0;
 function findEm(){
   for (var rowIdx = 0; rowIdx < gameBoardGrid.length; rowIdx++){
     for (var cellIdx = 0; cellIdx < gameBoardGrid[rowIdx].length; cellIdx++){
-      if (gameBoardGrid[rowIdx][cellIdx] == 2){
+      if (gameBoardGrid[rowIdx][cellIdx] == PAC){
         pacman.x = cellIdx;
         pacman.y = rowIdx;
         prevPac.x = cellIdx;
         prevPac.y = rowIdx;
-        console.log("pacman: row-" + rowIdx + " col-" + cellIdx);
+        // console.log("pacman: row-" + rowIdx + " col-" + cellIdx);
       }
 
-      if (gameBoardGrid[rowIdx][cellIdx] == 4){
+      if (gameBoardGrid[rowIdx][cellIdx] == GHS){
         ghost.x = cellIdx;
         ghost.y = rowIdx;
-        console.log("ghost: row-" + rowIdx + " col-" + cellIdx);
+        // console.log("ghost: row-" + rowIdx + " col-" + cellIdx);
+      }
+
+      if (gameBoardGrid[rowIdx][cellIdx] == COI){
+        coins++;
       }
     }
   }
+  // console.log("coins - " + coins);
 }
 
 function drawGameBoard(){
@@ -234,13 +242,16 @@ function addKeyPressListener(){
         // comment out both alert and console.log if no message has to be sent to the user
 
         // alert('Invalid key. Please use Arrow keys');
-        console.log('Invalid key. Please use Arrow keys');
+        // console.log('Invalid key. Please use Arrow keys');
         return;
     }
 
     if (gameBoardGrid[pacman.y][pacman.x] != BRK){  // the outer IF is for collison detection
       if (gameBoardGrid[pacman.y][pacman.x] == 1){  // the inner IF is for scoring
         score++;
+        // if (score == coins){
+        //   alive = false;
+        // }
       }
       gameBoardGrid[pacman.y][pacman.x] = PAC;
       gameBoardGrid[prevPac.y][prevPac.x] = EMP;
@@ -254,10 +265,21 @@ function addKeyPressListener(){
 
 function startGhost(){
   gp = setInterval(ghostProtocol, 200); // change the number here to speed up or slow down the ghost
+
+  // The below is for testing. The ghost moves on hitting the space bar. if this is uncommented, make sure the setInterval statement is commented. Otherwise, it will still work but wont be of help with testing.
+  
+  // $(document).keydown(function(e){
+  //   if (event.which == 32){
+  //     ghostProtocol();
+  //   }
+  // })
 }
 
 function ghostProtocol(){
-  var dirAvail = [];
+  var    dirAvail = [];
+  var     dirToGo = [];
+  var    dirMatch = 0;
+  var matchedDirs = [];
 
   if(gameBoardGrid[ghost.y][ghost.x - 1] !== BRK){dirAvail.push('l')};
   if(gameBoardGrid[ghost.y][ghost.x + 1] !== BRK){dirAvail.push('r')};
@@ -265,14 +287,96 @@ function ghostProtocol(){
   if(gameBoardGrid[ghost.y + 1][ghost.x] !== BRK){dirAvail.push('d')};
 
   // The below will make sure that if the ghost has multiple options for taking the next step, it doesn't retrace its step. This stops the ghost from oscillating between two adjacent cells and makes it move through the grid
-  if ((prevGhostStep == '') || (dirAvail.length == 1)){
+  // if ((prevGhostStep == '') || (dirAvail.length == 1)){
+  if (dirAvail.length == 1){
     //  do nothing if these conditions are satisfied
   } else {
-    if ((prevGhostStep == 'l') && ($.inArray('r',dirAvail) > -1)){dirAvail.splice($.inArray('r', dirAvail),1);}
-    if ((prevGhostStep == 'r') && ($.inArray('l',dirAvail) > -1)){dirAvail.splice($.inArray('l', dirAvail),1);}
-    if ((prevGhostStep == 'u') && ($.inArray('d',dirAvail) > -1)){dirAvail.splice($.inArray('d', dirAvail),1);}
-    if ((prevGhostStep == 'd') && ($.inArray('u',dirAvail) > -1)){dirAvail.splice($.inArray('u', dirAvail),1);}
+    // putting in a rudimentary pacman seeking mechanism
+    // 1. figure out where the ghost is relative to pacman. Possibilities are: leftup, up, rightup, right, rightdown, down, leftdown, left. Store this in dirToGo
+    switch (true){
+      case (pacman.x < ghost.x):
+        dirToGo.push('l');
+        switch (true){
+          case (pacman.y < ghost.y):
+            dirToGo.push('u');
+            break;
+          case (pacman.y > ghost.y):
+            dirToGo.push('d');
+            break;
+        }
+        break;
+      case (pacman.x == ghost.x):
+        switch (true){
+          case (pacman.y < ghost.y):
+            dirToGo.push('u');
+            break;
+          case (pacman.y > ghost.y):
+            dirToGo.push('d');
+            break;
+        }
+        break;
+      case (pacman.x > ghost.x):
+        dirToGo.push('r');
+        switch (true){
+          case (pacman.y < ghost.y):
+            dirToGo.push('u');
+            break;
+          case (pacman.y > ghost.y):
+            dirToGo.push('d');
+            break;
+        }
+        break;
+    }
+
+    // 2. We have collected the possible directions of motion in dirAvail. Check if this contains the ideal directions identified above
+    for (var i = 0; i < dirToGo.length; i++){
+      if ($.inArray(dirToGo[i],dirAvail) > -1){
+        dirMatch++;
+        matchedDirs.push(dirToGo[i]);
+      }
+    }
+
+    // 3. If all the ideal directions (max of 2) are also possible directions, then make sure that the ideal directions are the only possible directions available.
+    if (dirMatch == dirToGo.length){
+      dirAvail = [];
+      for (var i = 0; i < dirToGo.length; i++){
+        dirAvail.push(dirToGo[i]);
+      }
+
+    // If only one of the ideal directions is available as a possible direction, if it is the same as the previous direction the ghost was taking, make it the only possible option.
+    } else if (matchedDirs[0] == prevGhostStep){ // using matchDirs[0] directly because at this point, the array can hold only one value
+      dirAvail = [];
+      dirAvail.push(matchedDirs[0]);
+      
+    // If only one of the ideal directions is available as a possible direction, and it is not the same as the previous direction the ghost was taking, check whether it is at right angles with previous direction and if yes make it the only option
+    } else {
+      switch (true){
+        case (matchedDirs[0] == 'l' && prevGhostStep != 'r'):
+        case (matchedDirs[0] == 'r' && prevGhostStep != 'l'):
+        case (matchedDirs[0] == 'u' && prevGhostStep != 'd'):
+        case (matchedDirs[0] == 'd' && prevGhostStep != 'u'):
+          dirAvail = [];
+          dirAvail.push(matchedDirs[0]);
+          break;
+        deafult:
+    // If any of the above conditions arent satisfied, then go ahead and randomly pick the direction for the ghost
+          if ((prevGhostStep == 'l') && ($.inArray('r',dirAvail) > -1)){dirAvail.splice($.inArray('r', dirAvail),1);}
+          if ((prevGhostStep == 'r') && ($.inArray('l',dirAvail) > -1)){dirAvail.splice($.inArray('l', dirAvail),1);}
+          if ((prevGhostStep == 'u') && ($.inArray('d',dirAvail) > -1)){dirAvail.splice($.inArray('d', dirAvail),1);}
+          if ((prevGhostStep == 'd') && ($.inArray('u',dirAvail) > -1)){dirAvail.splice($.inArray('u', dirAvail),1);}
+          break;
+      }
+      // } else {
+      //   if ((prevGhostStep == 'l') && ($.inArray('r',dirAvail) > -1)){dirAvail.splice($.inArray('r', dirAvail),1);}
+      //   if ((prevGhostStep == 'r') && ($.inArray('l',dirAvail) > -1)){dirAvail.splice($.inArray('l', dirAvail),1);}
+      //   if ((prevGhostStep == 'u') && ($.inArray('d',dirAvail) > -1)){dirAvail.splice($.inArray('d', dirAvail),1);}
+      //   if ((prevGhostStep == 'd') && ($.inArray('u',dirAvail) > -1)){dirAvail.splice($.inArray('u', dirAvail),1);}
+      // }
+    }
   }
+    
+    // console.log("dirToGo - " + dirToGo);
+    // console.log("dirAvail - " + dirAvail);
 
   var next = Math.floor(Math.random() * dirAvail.length);
   
@@ -297,8 +401,10 @@ function ghostProtocol(){
       break;
   }
 
+  // console.log("dir selected - " + dirAvail[next]);
+
   if ((ghost.x == pacman.x) && (ghost.y == pacman.y)){
-    // do not update the ghosts position if it reaches pacman. This 
+    // do not update the ghosts position if it reaches pacman. 
   } else {
     ghostCellContent = gameBoardGrid[ghost.y][ghost.x];
     gameBoardGrid[ghost.y][ghost.x] = GHS;
